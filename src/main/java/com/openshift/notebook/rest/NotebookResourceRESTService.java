@@ -2,7 +2,7 @@ package com.openshift.notebook.rest;
 
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
@@ -20,7 +20,7 @@ import com.openshift.notebook.domain.Notebook;
  * This class produces a RESTful service to read the contents of the members table.
  */
 @Path("/notebooks")
-@RequestScoped
+@Stateless
 public class NotebookResourceRESTService {
 	
    @Inject
