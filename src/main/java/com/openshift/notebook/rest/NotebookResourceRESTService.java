@@ -6,19 +6,16 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import com.openshift.notebook.domain.Notebook;
 
-/**
- * JAX-RS Example
- * 
- * This class produces a RESTful service to read the contents of the members table.
- */
 @Path("/notebooks")
 @Stateless
 public class NotebookResourceRESTService {
@@ -39,13 +36,7 @@ public class NotebookResourceRESTService {
    @Path("/list")
    @Produces("text/xml")
    public List<Notebook> listAllNotebooks() {
-      // Use @SupressWarnings to force IDE to ignore warnings about "genericizing" the results of
-      // this query
       @SuppressWarnings("unchecked")
-      // We recommend centralizing inline queries such as this one into @NamedQuery annotations on
-      // the @Entity class
-      // as described in the named query blueprint:
-      // https://blueprints.dev.java.net/bpcatalog/ee5/persistence/namedquery.html
       final List<Notebook> results = em.createQuery("select m from Notebook m order by m.name").getResultList();
       return results;
    }
@@ -55,5 +46,17 @@ public class NotebookResourceRESTService {
    @Produces("text/xml")
    public Notebook lookupNotebookById(@PathParam("id") long id) {
       return em.find(Notebook.class, id);
+   }
+   
+   @DELETE
+   @Path("/{id:[0-9][0-9]*}")
+   public Response deleteNotebook(@PathParam("id") Long id){
+	   Notebook notebook = em.find(Notebook.class, id);
+	   if(notebook == null){
+		   return Response.status(Response.Status.NOT_FOUND).build();
+	   }
+	   
+	   em.remove(notebook);
+	   return Response.ok().build();
    }
 }
